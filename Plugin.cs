@@ -35,13 +35,12 @@ namespace Manhunt
         public int roundTime;
     }
 
-    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, "1.0.0")]
     public class Plugin : BasePlugin
     {
         // Game state variables
         public static int gameState;
         public static int prevGameState;
-        public static int prevMapID = 0;
         public static bool canStartGame = true;
         public static bool canAfkCheck = true;
 
@@ -49,9 +48,6 @@ namespace Manhunt
         public static float gameTimer;
         public static float afkTimer = 10f;
         public static float freezeTimer = 3f;
-        public static float steamLoopUpdateTimer = 0;
-        public static float gameLoopUpdateTimer = 0;
-        public static Dictionary<ulong, float> respawnTimers = new();
 
         // Player variables
         public static List<ulong> alivePlayers = new();
@@ -68,6 +64,7 @@ namespace Manhunt
         // Map variables
         public static Dictionary<int, MapInfo> mapDictionary = new();
         public static int randomMapID = 0;
+        public static int prevMapID = 0;
 
         public override void Load()
         {
@@ -680,13 +677,8 @@ namespace Manhunt
         {
             if (!IsHost()) return;
 
-            if (param_0 == GetMyID() && toggleAfk)
-            {
-                LobbyManager.Instance.GetClient(param_0).field_Public_Boolean_0 = false; // active player
-                return;
-            }
-
-            LobbyManager.Instance.GetClient(param_0).field_Public_Boolean_0 = true; // active player
+            if (param_0 == GetMyID() && toggleAfk) LobbyManager.Instance.GetClient(param_0).field_Public_Boolean_0 = false; // active player
+            else LobbyManager.Instance.GetClient(param_0).field_Public_Boolean_0 = true; // active player
         }
 
         [HarmonyPatch(typeof(GameMode), nameof(GameMode.Init))]
